@@ -1,0 +1,12 @@
+[package]
+name = "maat"
+version = "0.1.0"
+authors = ["Andrew Norman <akiwicoder@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+kafka = "0.8"
+env_logger = "0.7.0"
+time = "0.1"
+openssl = "0.10"
+openssl-sys = "0.9"
