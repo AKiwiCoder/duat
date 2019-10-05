@@ -1,0 +1,68 @@
+version: "3.7"
+services:
+
+  maat:
+    build: maat
+    environment:
+      - "BROKER=khenti-amenti:9092"
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      - khenti-amenti
+
+  ishtar:
+    build: ishtar
+    ports:
+      - 2181:2181
+    networks:
+      - backend
+    volumes:
+      - "./data/ishtar:/bitnami/zookeeper"
+
+  khenti-amenti:
+    build: khenti-amenti
+    ports:
+      - 9092:9092
+    networks:
+      - backend
+    volumes:
+      - "./data/khenti-amenti:/bitnami/kafka"
+    depends_on:
+      - ishtar
+
+  khenti-qerer:
+    build: khenti-qerer
+    ports:
+      - 9000:9000
+    networks:
+      - backend
+    depends_on:
+      - khenti-amenti
+      - ishtar
+
+  thoth:
+    build: thoth
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+    volumes:
+      - "./data/thoth/db:/var/lib/postgresql/data"
+
+  seshat:
+    build: seshat
+    environment:
+      - "ADMINER_DEFAULT_SERVER=thoth"
+    ports:
+      - 9001:8080
+    networks:
+      - backend
+    depends_on:
+      - thoth
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
